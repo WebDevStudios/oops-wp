@@ -1,0 +1,18 @@
+{
+    "name": "webdevstudios/oops-wp",
+    "description": "A collection of interfaces and class structures to promote object-oriented programming practices in WordPress.",
+    "authors": [
+        {
+            "name": "Jeremy Ward",
+            "email": "jeremy.ward@webdevstudios.com",
+            "role": "Senior Backend Engineer",
+            "homepage": "https://jmichaelward.com"
+        }
+    ],
+    "license": "GPL-2.0-or-later",
+    "autoload": {
+        "psr-4": {
+            "WDS\\OopsWP\\": "src/"
+        }
+    }
+}
