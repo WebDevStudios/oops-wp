@@ -29,7 +29,7 @@ abstract class PostType implements Registerable {
 	public function register() {
 		register_post_type(
 			$this->slug,
-			wp_parse_args( $this->get_default_registration_arguments(), $this->get_registration_arguments() )
+			wp_parse_args( $this->get_registration_arguments(),  $this->get_default_registration_arguments() )
 		);
 	}
 
