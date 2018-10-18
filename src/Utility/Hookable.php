@@ -2,7 +2,7 @@
 /**
  * Interface for objects that need to register hooks with WordPress.
  *
- * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+ * @author  Jeremy Ward <jeremy.ward@webdevstudios.com>
  * @package WDS\OopsWP\Utility
  */
 

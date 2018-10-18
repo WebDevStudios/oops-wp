@@ -2,7 +2,7 @@
 /**
  * Class structure that defines a registered service to run within a plugin or theme.
  *
- * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+ * @author  Jeremy Ward <jeremy.ward@webdevstudios.com>
  * @package WDS\OopsWP\Structure
  */
 

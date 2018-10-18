@@ -6,9 +6,9 @@
  * gets registered on the `init` action. An object that registers the custom post type might register its own hooks,
  * and also use this interface as the callback for registering itself.
  *
- * @see \WDS\OopsWP\Utility\Hookable
+ * @see     \WDS\OopsWP\Utility\Hookable
  *
- * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+ * @author  Jeremy Ward <jeremy.ward@webdevstudios.com>
  * @package WDS\OopsWP\Utility
  */
 
