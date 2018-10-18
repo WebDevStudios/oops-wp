@@ -25,6 +25,8 @@ abstract class PostType implements Registerable {
 
 	/**
 	 * Callback to register the post type with WordPress.
+	 *
+	 * @TODO Add exception if slug is null. Extending classes should be defining their own.
 	 */
 	public function register() {
 		register_post_type(
