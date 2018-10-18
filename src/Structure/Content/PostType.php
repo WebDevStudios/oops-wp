@@ -59,6 +59,9 @@ abstract class PostType implements Registerable {
 	/**
 	 * Get the post type labels.
 	 *
+	 * Extending classes should be responsible for adding their own post type labels for translation purposes.
+	 *
+	 * @see https://codex.wordpress.org/Function_Reference/register_post_type#labels
 	 * @return array
 	 */
 	abstract protected function get_labels() : array;
