@@ -8,8 +8,8 @@
 
 namespace WDS\OopsWP\Structure;
 
-use WDS\OopsWP\Utility\Hookable;
 use WDS\OopsWP\Utility\Runnable;
+use WDS\OopsWP\Utility\Hookable;
 
 /**
  * Class Service

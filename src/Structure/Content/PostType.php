@@ -41,8 +41,6 @@ abstract class PostType implements Registerable {
 	 *
 	 * Defaults: Everything is set to true by default, with full post type support. Extending classes
 	 * can turn off unwanted settings.
-	 *
-	 * @since 2018-10-15
 	 */
 	private function get_default_registration_arguments() {
 		return [
