@@ -32,7 +32,7 @@ abstract class PostType implements Registerable {
 	public function register() {
 		register_post_type(
 			$this->slug,
-			wp_parse_args( $this->get_default_arguments(), $this->get_registration_arguments() )
+			wp_parse_args( $this->get_default_registration_arguments(), $this->get_registration_arguments() )
 		);
 	}
 
@@ -44,7 +44,7 @@ abstract class PostType implements Registerable {
 	 *
 	 * @since 2018-10-15
 	 */
-	private function get_default_arguments() {
+	private function get_default_registration_arguments() {
 		return [
 			'labels'   => $this->get_labels(),
 			'public'   => true,
