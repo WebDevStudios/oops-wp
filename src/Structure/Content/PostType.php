@@ -20,14 +20,11 @@ abstract class PostType implements Registerable {
 	 * Post type slug.
 	 *
 	 * @var string
-	 * @since 2018-10-15
 	 */
 	protected $slug;
 
 	/**
 	 * Callback to register the post type with WordPress.
-	 *
-	 * @since 2018-10-15
 	 */
 	public function register() {
 		register_post_type(
