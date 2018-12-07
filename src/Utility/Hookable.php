@@ -3,19 +3,23 @@
  * Interface for objects that need to register hooks with WordPress.
  *
  * @author  Jeremy Ward <jeremy.ward@webdevstudios.com>
- * @package WDS\OopsWP\Utility
+ * @package WebDevStudios\OopsWP\Utility
+ * @since   1.0.0
  */
 
-namespace WDS\OopsWP\Utility;
+namespace WebDevStudios\OopsWP\Utility;
 
 /**
  * Interface Hookable
  *
- * @package WDS\OopsWP\Utility
+ * @package WebDevStudios\OopsWP\Utility
+ * @since   1.0.0
  */
 interface Hookable {
 	/**
 	 * Register actions and filters with WordPress.
+	 *
+	 * @since 1.0.0
 	 */
 	public function register_hooks();
 }

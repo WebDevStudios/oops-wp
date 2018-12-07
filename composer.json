@@ -5,14 +5,16 @@
         {
             "name": "Jeremy Ward",
             "email": "jeremy.ward@webdevstudios.com",
-            "role": "Senior Backend Engineer",
-            "homepage": "https://jmichaelward.com"
+            "role": "Senior Backend Engineer"
         }
     ],
     "license": "GPL-2.0-or-later",
+    "require": {
+        "php": "^7"
+    },
     "autoload": {
         "psr-4": {
-            "WDS\\OopsWP\\": "src/"
+            "WebDevStudios\\OopsWP\\": "src/"
         }
     }
 }

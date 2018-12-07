@@ -3,30 +3,33 @@
  * Abstract class for a custom post type.
  *
  * @author  Jeremy Ward <jeremy.ward@webdevstudios.com>
- * @package WDS\OopsWP\Structure\Content
+ * @package WebDevStudios\OopsWP\Structure\Content
  */
 
-namespace WDS\OopsWP\Structure\Content;
+namespace WebDevStudios\OopsWP\Structure\Content;
 
-use WDS\OopsWP\Utility\Registerable;
+use WebDevStudios\OopsWP\Utility\Registerable;
 
 /**
  * Class PostType
  *
- * @package WDS\OopsWP\Structure\Content
+ * @package WebDevStudios\OopsWP\Structure\Content
+ * @since   1.0.0
  */
 abstract class PostType implements Registerable {
 	/**
 	 * Post type slug.
 	 *
 	 * @var string
+	 * @since 1.0.0
 	 */
 	protected $slug;
 
 	/**
 	 * Callback to register the post type with WordPress.
 	 *
-	 * @TODO Add exception if slug is null. Extending classes should be defining their own.
+	 * @TODO  Add exception if slug is null. Extending classes should be defining their own.
+	 * @since 1.0.0
 	 */
 	public function register() {
 		register_post_type(
@@ -40,6 +43,9 @@ abstract class PostType implements Registerable {
 	 *
 	 * Defaults: Everything is set to true by default, with full post type support. Extending classes
 	 * can turn off unwanted settings.
+	 *
+	 * @return array
+	 * @since 1.0.0
 	 */
 	private function get_default_registration_arguments() {
 		return [
@@ -55,16 +61,18 @@ abstract class PostType implements Registerable {
 	 * At a minimum, the extending class should return an empty array.
 	 *
 	 * @return array
+	 * @since 1.0.0
 	 */
-	abstract protected function get_registration_arguments() : array;
+	abstract protected function get_registration_arguments(): array;
 
 	/**
 	 * Get the post type labels.
 	 *
 	 * Extending classes should be responsible for adding their own post type labels for translation purposes.
 	 *
-	 * @see https://codex.wordpress.org/Function_Reference/register_post_type#labels
+	 * @see   https://codex.wordpress.org/Function_Reference/register_post_type#labels
 	 * @return array
+	 * @since 1.0.0
 	 */
-	abstract protected function get_labels() : array;
+	abstract protected function get_labels(): array;
 }

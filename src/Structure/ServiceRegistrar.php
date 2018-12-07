@@ -7,26 +7,32 @@
  * extends this ServiceRegistrar class
  *
  * @author  Jeremy Ward <jeremy.ward@webdevstudios.com>
- * @package WDS\OopsWP\Structure
+ * @package WebDevStudios\OopsWP\Structure
+ * @since   1.0.0
  */
 
-namespace WDS\OopsWP\Structure;
+namespace WebDevStudios\OopsWP\Structure;
 
-use WDS\OopsWP\Utility\Runnable;
+use WebDevStudios\OopsWP\Utility\Runnable;
 
 /**
  * Class ServiceRegistrar
+ *
+ * @since 1.0.0
  */
 abstract class ServiceRegistrar implements Runnable {
 	/**
 	 * Array of fully-qualified namespaces of services to instantiate.
 	 *
 	 * @var array
+	 * @since 1.0.0
 	 */
 	protected $services = [];
 
 	/**
 	 * Run the initialization process.
+	 *
+	 * @since 1.0.0
 	 */
 	public function run() {
 		$this->register_services();
@@ -35,11 +41,12 @@ abstract class ServiceRegistrar implements Runnable {
 	/**
 	 * Register this object's services.
 	 *
-	 * @TODO Update this method to make registration fail if a service class doesn't extend our Service abstract.
+	 * @TODO  Update this method to make registration fail if a service class doesn't extend our Service abstract.
+	 * @since 1.0.0
 	 */
 	private function register_services() {
 		foreach ( $this->services as $service_class ) {
-			/* @var $service \WDS\OopsWP\Structure\Service Class instance of a Service. */
+			/* @var $service \WebDevStudios\OopsWP\Structure\Service Class instance of a Service. */
 			$service = new $service_class();
 			$service->run();
 		}
