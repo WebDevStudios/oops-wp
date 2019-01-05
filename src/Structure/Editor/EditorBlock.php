@@ -10,7 +10,7 @@
 namespace WebDevStudios\OopsWP\Structure\Editor;
 
 use WebDevStudios\OopsWP\Utility\Registerable;
-use WebDevStudios\OopsWP\Utility\RootPathDependent;
+use WebDevStudios\OopsWP\Utility\FilePathDependent;
 
 /**
  * Class EditorBlock
@@ -20,7 +20,7 @@ use WebDevStudios\OopsWP\Utility\RootPathDependent;
  * @since   2019-01-04
  */
 abstract class EditorBlock implements Registerable {
-	use RootPathDependent;
+	use FilePathDependent;
 
 	/**
 	 * Register the block with WordPress.
