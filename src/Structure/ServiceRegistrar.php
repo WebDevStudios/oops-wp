@@ -51,7 +51,7 @@ abstract class ServiceRegistrar implements Runnable {
 		foreach ( $this->services as $service_class ) {
 			/* @var $service \WebDevStudios\OopsWP\Structure\Service Class instance of a Service. */
 			$service = new $service_class();
-			$this->set_root_path_on_service( $service );
+			$this->set_file_path_on_service( $service );
 			$service->run();
 		}
 	}
@@ -65,12 +65,12 @@ abstract class ServiceRegistrar implements Runnable {
 	 * @since  2019-01-04
 	 * @return void
 	 */
-	private function set_root_path_on_service( Service $service ) {
+	private function set_file_path_on_service( Service $service ) {
 		if ( ! in_array( FilePathDependent::class, class_uses( $service ) ) ) {
 			return;
 		}
 
 		/** @var $service FilePathDependent */
-		$service->set_root_path( $this->root_path );
+		$service->set_file_path( $this->file_path );
 	}
 }
