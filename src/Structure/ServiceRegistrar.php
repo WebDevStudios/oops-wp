@@ -13,6 +13,7 @@
 
 namespace WebDevStudios\OopsWP\Structure;
 
+use WebDevStudios\OopsWP\Utility\RootPathDependent;
 use WebDevStudios\OopsWP\Utility\Runnable;
 
 /**
@@ -21,6 +22,8 @@ use WebDevStudios\OopsWP\Utility\Runnable;
  * @since 1.0.0
  */
 abstract class ServiceRegistrar implements Runnable {
+	use RootPathDependent;
+
 	/**
 	 * Array of fully-qualified namespaces of services to instantiate.
 	 *
@@ -48,7 +51,26 @@ abstract class ServiceRegistrar implements Runnable {
 		foreach ( $this->services as $service_class ) {
 			/* @var $service \WebDevStudios\OopsWP\Structure\Service Class instance of a Service. */
 			$service = new $service_class();
+			$this->set_root_path_on_service( $service );
 			$service->run();
 		}
+	}
+
+	/**
+	 * Pass the relative root path to services that are dependent upon it.
+	 *
+	 * @param Service $service
+	 *
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since  2019-01-04
+	 * @return void
+	 */
+	private function set_root_path_on_service( Service $service ) {
+		if ( ! in_array( RootPathDependent::class, class_uses( $service ) ) ) {
+			return;
+		}
+
+		/** @var $service RootPathDependent */
+		$service->set_root_path( $this->root_path );
 	}
 }
