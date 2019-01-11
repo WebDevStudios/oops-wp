@@ -14,6 +14,12 @@ autoloader, generally:
 From there, all of your classes can now extend, implement, or use
 the structures provided by this library.
 
+## Versioning
+Once a stable release has been released, this project will follow
+strictly follow [semantic versioning](https://semver.org) practices. This
+will ensure that engineers understand the risks involved when updating
+the package to versions that break backward compatibility.
+
 ## Contributing
 See the [contributing](CONTRIBUTING.md) doc for information on
 how to contribute to this project.
