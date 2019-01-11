@@ -15,5 +15,5 @@ From there, all of your classes can now extend, implement, or use
 the structures provided by this library.
 
 ## Contributing
-See the [contributing](Contributing.md) doc for information on
+See the [contributing](CONTRIBUTING.md) doc for information on
 how to contribute to this project.
