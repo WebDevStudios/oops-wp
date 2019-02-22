@@ -47,7 +47,7 @@ abstract class ServiceRegistrar implements Runnable {
 	 * @TODO  Update this method to make registration fail if a service class doesn't extend our Service abstract.
 	 * @since 1.0.0
 	 */
-	private function register_services() {
+	protected function register_services() {
 		foreach ( $this->services as $service_class ) {
 			/* @var $service \WebDevStudios\OopsWP\Structure\Service Class instance of a Service. */
 			$service = new $service_class();
