@@ -36,7 +36,15 @@ abstract class ContentType implements Registerable {
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2019-03-01
 	 */
-	abstract protected function get_args();
+	abstract protected function get_args() : array;
+
+	/**
+	 * Get the default arguments for the content type.
+	 *
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since  2019-03-01
+	 */
+	abstract protected function get_default_args() : array;
 
 	/**
 	 * Get the labels for the content type.
@@ -44,5 +52,5 @@ abstract class ContentType implements Registerable {
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2019-03-01
 	 */
-	abstract protected function get_labels();
+	abstract protected function get_labels() : array;
 }
