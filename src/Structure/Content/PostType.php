@@ -45,7 +45,7 @@ abstract class PostType extends ContentType {
 	 * @since 0.1.0
 	 */
 	protected function get_registration_arguments(): array {
-		return $this->get_args();
+		return [];
 	}
 
 	/**
@@ -58,7 +58,7 @@ abstract class PostType extends ContentType {
 	 * @return array
 	 */
 	protected function get_args() : array {
-		return [];
+		return $this->get_registration_arguments();
 	}
 
 	/**
