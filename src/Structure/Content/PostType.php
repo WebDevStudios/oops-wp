@@ -30,7 +30,7 @@ abstract class PostType extends ContentType {
 	 * @since 0.1.0
 	 */
 	public function register() {
-		register_post_type( $this->slug, array_merge( $this->get_args(), $this->get_default_args() ) );
+		register_post_type( $this->slug, array_merge( $this->get_default_args(), $this->get_args() ) );
 	}
 
 	/**
