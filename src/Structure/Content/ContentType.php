@@ -12,8 +12,6 @@
 
 namespace WebDevStudios\OopsWP\Structure\Content;
 
-use WebDevStudios\OopsWP\Utility\Registerable;
-
 /**
  * Class ContentType
  *
@@ -21,7 +19,7 @@ use WebDevStudios\OopsWP\Utility\Registerable;
  * @package WebDevStudios\OopsWP\Structure\Content
  * @since   2019-03-01
  */
-abstract class ContentType implements Registerable {
+abstract class ContentType implements ContentTypeInterface {
 	/**
 	 * Slug for the content.
 	 *
