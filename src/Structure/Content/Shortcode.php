@@ -49,5 +49,9 @@ abstract class Shortcode implements ShortcodeInterface {
 		if ( empty( $this->tag ) ) {
 			throw new \Exception( 'You must define the $tag property for your shortcode in ' . __CLASS__ );
 		}
+
+		if ( ! is_string( $this->tag ) ) {
+			throw new \Exception( 'The $tag property defined in your shortcode class ' . __CLASS__ . ' must be a string' );
+		}
 	}
 }
