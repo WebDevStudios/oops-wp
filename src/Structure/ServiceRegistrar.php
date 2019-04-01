@@ -19,7 +19,7 @@ use WebDevStudios\OopsWP\Utility\Runnable;
 /**
  * Class ServiceRegistrar
  *
- * @since 1.0.0
+ * @since 0.1.0
  */
 abstract class ServiceRegistrar implements Runnable {
 	use FilePathDependent;
@@ -28,14 +28,14 @@ abstract class ServiceRegistrar implements Runnable {
 	 * Array of fully-qualified namespaces of services to instantiate.
 	 *
 	 * @var array
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 */
 	protected $services = [];
 
 	/**
 	 * Run the initialization process.
 	 *
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 */
 	public function run() {
 		$this->register_services();
@@ -45,7 +45,7 @@ abstract class ServiceRegistrar implements Runnable {
 	 * Register this object's services.
 	 *
 	 * @TODO  Update this method to make registration fail if a service class doesn't extend our Service abstract.
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 */
 	protected function register_services() {
 		foreach ( $this->services as $service_class ) {
