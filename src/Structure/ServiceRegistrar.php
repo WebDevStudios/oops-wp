@@ -19,7 +19,7 @@ use WebDevStudios\OopsWP\Utility\Runnable;
 /**
  * Class ServiceRegistrar
  *
- * @since 1.0.0
+ * @since 0.1.0
  */
 abstract class ServiceRegistrar implements Runnable {
 	use FilePathDependent;
@@ -28,14 +28,15 @@ abstract class ServiceRegistrar implements Runnable {
 	 * Array of fully-qualified namespaces of services to instantiate.
 	 *
 	 * @var array
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 */
 	protected $services = [];
 
 	/**
 	 * Run the initialization process.
 	 *
-	 * @since 1.0.0
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since 0.1.0
 	 */
 	public function run() {
 		$this->register_services();
@@ -44,33 +45,62 @@ abstract class ServiceRegistrar implements Runnable {
 	/**
 	 * Register this object's services.
 	 *
-	 * @TODO  Update this method to make registration fail if a service class doesn't extend our Service abstract.
-	 * @since 1.0.0
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since 0.1.0
 	 */
 	protected function register_services() {
-		foreach ( $this->services as $service_class ) {
-			/* @var $service \WebDevStudios\OopsWP\Structure\Service Class instance of a Service. */
-			$service = new $service_class();
-			$this->set_file_path_on_service( $service );
+		$this->services = $this->init_services();
+		$this->set_file_path_on_services();
+
+		foreach ( $this->services as $service ) {
 			$service->run();
 		}
 	}
 
 	/**
-	 * Pass the relative root path to services that are dependent upon it.
+	 * Initialize our service objects.
 	 *
-	 * @param Service $service
+	 * This method converts our indexed $services array into an associative key => value array,
+	 * where the index is the Service's class name and the value is the instantiated object.
+	 *
+	 * @return array
+	 * @since  2019-04-01
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 */
+	private function init_services() {
+		$objects = array_map( function ( $service_class ) {
+			return [
+				'namespace' => $service_class,
+				'object'    => new $service_class(),
+			];
+		}, $this->services );
+
+		return array_column( $objects, 'object', 'namespace' );
+	}
+
+	/**
+	 * Pass this ServiceRegistrar's $file_path value to the Service objects that require it.
 	 *
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2019-01-04
-	 * @return void
 	 */
-	private function set_file_path_on_service( Service $service ) {
-		if ( ! in_array( FilePathDependent::class, class_uses( $service ) ) ) {
-			return;
+	private function set_file_path_on_services() {
+		foreach ( array_filter( $this->services, [ $this, 'service_uses_file_path' ] ) as $service ) {
+			/* @var $service FilePathDependent FilePathDependent service. */
+			$service->set_file_path( $this->file_path );
 		}
+	}
 
-		/** @var $service FilePathDependent */
-		$service->set_file_path( $this->file_path );
+	/**
+	 * Determine whether a Service relies on the ServiceRegistrar's file path value.
+	 *
+	 * @param Service $service Service instance.
+	 *
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since  2019-04-01
+	 * @return bool
+	 */
+	private function service_uses_file_path( Service $service ) {
+		return in_array( FilePathDependent::class, class_uses( $service ), true );
 	}
 }

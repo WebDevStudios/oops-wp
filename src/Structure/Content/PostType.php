@@ -8,20 +8,18 @@
 
 namespace WebDevStudios\OopsWP\Structure\Content;
 
-use WebDevStudios\OopsWP\Utility\Registerable;
-
 /**
  * Class PostType
  *
  * @package WebDevStudios\OopsWP\Structure\Content
- * @since   1.0.0
+ * @since   0.1.0
  */
-abstract class PostType implements Registerable {
+abstract class PostType extends ContentType {
 	/**
 	 * Post type slug.
 	 *
 	 * @var string
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 */
 	protected $slug;
 
@@ -29,30 +27,10 @@ abstract class PostType implements Registerable {
 	 * Callback to register the post type with WordPress.
 	 *
 	 * @TODO  Add exception if slug is null. Extending classes should be defining their own.
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 */
 	public function register() {
-		register_post_type(
-			$this->slug,
-			wp_parse_args( $this->get_registration_arguments(), $this->get_default_registration_arguments() )
-		);
-	}
-
-	/**
-	 * Get the post type arguments.
-	 *
-	 * Defaults: Everything is set to true by default, with full post type support. Extending classes
-	 * can turn off unwanted settings.
-	 *
-	 * @return array
-	 * @since 1.0.0
-	 */
-	private function get_default_registration_arguments() {
-		return [
-			'labels'   => $this->get_labels(),
-			'public'   => true,
-			'supports' => [ 'title', 'editor' ],
-		];
+		register_post_type( $this->slug, array_merge( $this->get_default_args(), $this->get_args() ) );
 	}
 
 	/**
@@ -60,19 +38,39 @@ abstract class PostType implements Registerable {
 	 *
 	 * At a minimum, the extending class should return an empty array.
 	 *
+	 * @deprecated
+	 * @see get_args
+	 *
 	 * @return array
-	 * @since 1.0.0
+	 * @since 0.1.0
 	 */
-	abstract protected function get_registration_arguments(): array;
+	protected function get_registration_arguments(): array {
+		return [];
+	}
 
 	/**
-	 * Get the post type labels.
+	 * Get the arguments for this post type.
 	 *
-	 * Extending classes should be responsible for adding their own post type labels for translation purposes.
+	 * Extending classes can override this method to pass in their own customizations specific to that post type.
 	 *
-	 * @see   https://codex.wordpress.org/Function_Reference/register_post_type#labels
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since  2019-03-01
 	 * @return array
-	 * @since 1.0.0
 	 */
-	abstract protected function get_labels(): array;
+	protected function get_args() : array {
+		return $this->get_registration_arguments();
+	}
+
+	/**
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since  2019-03-01
+	 * @return array
+	 */
+	protected function get_default_args() : array {
+		return [
+			'labels'   => $this->get_labels(),
+			'public'   => true,
+			'supports' => [ 'title', 'editor' ],
+		];
+	}
 }

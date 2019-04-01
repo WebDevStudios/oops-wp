@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.2.0
+- Introduces new abstract classes and interfaces to the library.
+- Updates PostType abstract class to extend from ContentType abstract.
+- Previous PostType registration methods marked as deprecated for removal in future release.
+- Fixes order of operations call in array_merge in PostType class.
+- ServiceRegistrar now caches instantiated Service objects to the $service property.
+- New structure-specific interfaces introduced for better type-hinting in projects.
+
+#### New Abstract Classes
+- ContentType
+- Taxonomy
+- Plugin
+- Shortcode
+
+#### New Interfaces
+- ContentTypeInterface
+- EditorBlockInterface
+- PluginInterface
+- Renderable - implementing classes can render.
+- ShortcodeInterface
+
 ## 2019-01-11
 The initial dev release of OOPS-WP is up on GitHub. This version offers
 the following structures:
