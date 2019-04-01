@@ -20,7 +20,7 @@ use WebDevStudios\OopsWP\Utility\FilePathDependent;
  * @package WebDevStudios\OopsWP\Structure\Editor
  * @since   2019-01-04
  */
-abstract class EditorBlock implements Registerable, AssetsLocator {
+abstract class EditorBlock implements EditorBlockInterface {
 	use FilePathDependent;
 
 	/**
