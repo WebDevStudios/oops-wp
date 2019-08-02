@@ -9,9 +9,8 @@
 
 namespace WebDevStudios\OopsWP\Structure\Editor;
 
-use WebDevStudios\OopsWP\Utility\AssetsLocator;
-use WebDevStudios\OopsWP\Utility\Registerable;
 use WebDevStudios\OopsWP\Utility\FilePathDependent;
+use \Exception;
 
 /**
  * Class EditorBlock
@@ -24,12 +23,27 @@ abstract class EditorBlock implements EditorBlockInterface {
 	use FilePathDependent;
 
 	/**
+	 * The full package name of the block.
+	 *
+	 * Examples: webdevstudios/custom-wysiwyg, webdevstudios-dynamic-block
+	 *
+	 * @var string
+	 * @since 2019-08-02
+	 */
+	protected $name;
+
+	/**
 	 * Register the block with WordPress.
 	 *
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @throws Exception If block $name value is not defined.
 	 * @since  2019-01-04
 	 */
 	public function register() {
+		if ( ! is_string( $this->name ) ) {
+			throw new Exception( get_called_class() . ' must define a string value for $name.' );
+		}
+
 		$this->register_script();
 		$this->register_style();
 		$this->register_type();
