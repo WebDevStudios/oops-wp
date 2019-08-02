@@ -36,17 +36,34 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 * Register the block with WordPress.
 	 *
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
-	 * @throws Exception If block $name value is not defined.
+	 * @throws Exception If the block $name property is invalid.
 	 * @since  2019-01-04
 	 */
 	public function register() {
-		if ( ! is_string( $this->name ) ) {
-			throw new Exception( get_called_class() . ' must define a string value for $name.' );
-		}
+		$this->validate_name();
 
 		$this->register_script();
 		$this->register_style();
 		$this->register_type();
+	}
+
+	/**
+	 * Validate the name property of the block.
+	 *
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @throws Exception If the block name is invalid.
+	 * @since  2019-08-02
+	 */
+	private function validate_name() {
+		if ( ! is_string( $this->name ) ) {
+			throw new Exception( get_called_class() . ' must define a string value for $name.' );
+		}
+
+		$name_parts = explode( '/', $this->name );
+
+		if ( 2 !== count( $name_parts ) ) {
+			throw new Exception( get_called_class() . ' $name property is not properly namespaced.' );
+		}
 	}
 
 	/**
