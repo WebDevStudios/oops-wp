@@ -33,6 +33,14 @@ abstract class EditorBlock implements EditorBlockInterface {
 	protected $name;
 
 	/**
+	 * Flag as to whether the block has front-end styles.
+	 *
+	 * @var bool
+	 * @since 2019-08-02
+	 */
+	protected $has_frontend_styles = false;
+
+	/**
 	 * Register the block with WordPress.
 	 *
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
@@ -43,7 +51,7 @@ abstract class EditorBlock implements EditorBlockInterface {
 		$this->validate_name();
 
 		$this->register_script();
-		$this->register_style();
+		$this->register_styles();
 
 		register_block_type( "{$this->name}", array_merge( $this->get_default_args(), $this->get_args() ) );
 	}
@@ -107,7 +115,7 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 */
 	protected function get_valid_block_asset_directory_paths() : array {
 		return [
-			trailingslashit( $this->file_path . 'assets/blocks/' . $this->get_short_class_name() ),
+			trailingslashit( $this->file_path . 'assets/dist/' . $this->get_short_class_name() ),
 			trailingslashit( $this->file_path . 'blocks/' . $this->get_short_class_name() . '/assets' ),
 		];
 	}
@@ -135,10 +143,14 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 */
 	protected function get_default_args() : array {
-		return [
+		$args = [
 			'editor_script' => "{$this->name}-js",
-			'editor_style'  => "{$this->name}-editor-css",
+			'editor_style'  => "{$this->name}-editor",
 		];
+
+		return $this->has_frontend_styles
+			? array_merge( $args, [ 'style' => "{$this->name}-style" ] )
+			: $args;
 	}
 
 	/**
@@ -215,16 +227,29 @@ abstract class EditorBlock implements EditorBlockInterface {
 	/**
 	 * Register the editor and front-end styles for rendering the block.
 	 *
+	 * Concrete EditorBlock instances must declare that they have front-end styles in order to render them in the editor.
+	 *
 	 * @throws Exception If the style asset(s) cannot be found.
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2019-01-05
 	 */
-	protected function register_style() {
-		wp_register_style(
-			"{$this->name}-editor-css",
-			$this->get_asset_url( 'editor.css' ),
-			array_merge( [ 'wp-edit-block' ], $this->get_additional_block_styles() )
-		);
+	protected function register_styles() {
+		$default_css = [
+			'editor' => [ 'wp-edit-blocks' ],
+			'style'  => [],
+		];
+
+		if ( ! $this->has_frontend_styles ) {
+			unset( $default_css['style'] );
+		}
+
+		foreach ( $default_css as $handle => $dependencies ) {
+			wp_register_style(
+				"{$this->name}-{$handle}",
+				$this->get_asset_url( "{$handle}.css" ),
+				array_merge( $dependencies, $this->get_additional_block_styles() )
+			);
+		}
 	}
 
 	/**
