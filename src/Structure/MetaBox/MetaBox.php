@@ -76,8 +76,6 @@ abstract class MetaBox implements MetaBoxInterface {
 	 * Data that should be set as the $args property of the meta box array
 	 * (which is the second parameter passed to your callback).
 	 *
-	 * This is optional. The default value is an empty array.
-	 *
 	 * @since 2019-05-01
 	 * @var   array Optional.
 	 */
