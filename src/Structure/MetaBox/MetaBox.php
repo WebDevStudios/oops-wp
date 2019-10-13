@@ -49,8 +49,6 @@ abstract class MetaBox implements MetaBoxInterface {
 	/**
 	 * The context within the screen where the boxes should display.
 	 *
-	 * This is optional. Default is 'side'.
-	 *
 	 * Post edit screen contexts include 'normal', 'side', and 'advanced'.
 	 * Comments screen contexts include 'normal' and 'side'.
 	 * Menus meta boxes all use the 'side' context.
@@ -63,9 +61,7 @@ abstract class MetaBox implements MetaBoxInterface {
 	/**
 	 * The priority within the context where the boxes should show.
 	 *
-	 * This is optional. Available values are 'high', 'low', and 'default'.
-	 *
-	 * The default value is 'default.'
+	 * Available values are 'high', 'low', and 'default'.
 	 *
 	 * @since 2019-05-01
 	 * @var   string Optional.
