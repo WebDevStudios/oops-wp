@@ -144,11 +144,15 @@ abstract class MetaBox implements MetaBoxInterface {
 	 */
 	private function check_requirements() : void {
 		if ( ! is_string( $this->id ) ) {
-			$this->throw_unexpected_value_exception( 'id', 'string' );
+			throw new UnexpectedValueException(
+				'$id property of registered MetaBox must be of type string. ' . gettype( $this->id ) . ' found.'
+			);
 		}
 
 		if ( ! is_string( $this->title ) ) {
-			$this->throw_unexpected_value_exception( 'title', 'string' );
+			throw new UnexpectedValueException(
+				'$title property of registered MetaBox must be of type string. ' . gettype( $this->title ) . ' found.';
+			)
 		}
 
 		if ( ! in_array( gettype( $this->screen ), [ 'string', 'array' ], true ) && ! $this->screen instanceof WP_Screen ) {
@@ -168,21 +172,5 @@ abstract class MetaBox implements MetaBoxInterface {
 				'The MetaBox $callback_args property, when defined, must be of type array. Found ' . gettype( $this->callback_args )
 			);
 		}
-	}
-
-	/**
-	 * Method to throw exception for missing requirements.
-	 *
-	 * @param string $property The name of the property throwing the exception.
-	 * @param string $expected The expected value type.
-	 *
-	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
-	 * @since  2019-10-13
-	 * @throws UnexpectedValueException If the value of a MetaBox property does not match our expected value.
-	 */
-	private function throw_unexpected_value_exception( $property, $expected ) : void {
-		throw new UnexpectedValueException(
-			"\${$property} property of registered MetaBox must be of type ${expected}, " . gettype( $this->{$property} ) . ' found.'
-		);
 	}
 }
