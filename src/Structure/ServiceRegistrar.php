@@ -67,7 +67,7 @@ abstract class ServiceRegistrar implements Runnable {
 	 * @since  2019-04-01
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 */
-	private function init_services() {
+	protected function init_services() {
 		$objects = array_map( function ( $service_class ) {
 			return [
 				'namespace' => $service_class,
