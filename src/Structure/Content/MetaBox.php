@@ -167,7 +167,7 @@ abstract class MetaBox extends ContentType implements Registerable {
 			'callback'      => [ $this, 'render' ],
 			'screen'        => $this->post_types,
 			'context'       => $this->context,
-			'priority'      => $this->prioririty,
+			'priority'      => $this->priority,
 			'callback_args' => $this->callback_args,
 		];
 	}
