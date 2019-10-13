@@ -151,8 +151,8 @@ abstract class MetaBox implements MetaBoxInterface {
 
 		if ( ! is_string( $this->title ) ) {
 			throw new UnexpectedValueException(
-				'$title property of registered MetaBox must be of type string. ' . gettype( $this->title ) . ' found.';
-			)
+				'$title property of registered MetaBox must be of type string. ' . gettype( $this->title ) . ' found.'
+			);
 		}
 
 		if ( ! in_array( gettype( $this->screen ), [ 'string', 'array' ], true ) && ! $this->screen instanceof WP_Screen ) {
