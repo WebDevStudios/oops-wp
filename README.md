@@ -16,7 +16,9 @@ available for you to use. In order to make those structures available
 to WordPress, you'll need to require the Composer-generated autoload file:
 
 ```
-require_once __DIR__ . '/vendor/autoload.php';
+if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
+	require_once __DIR__ . '/vendor/autoload.php';
+}
 ```
 
 ### A Caveat
