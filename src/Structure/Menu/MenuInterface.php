@@ -7,7 +7,7 @@
  * @since 2019-05-01
  */
 
-namespace WebDevStudios\OopsWP\Structure\Content;
+namespace WebDevStudios\OopsWP\Structure\Menu;
 
 use WebDevStudios\OopsWP\Utility\Registerable;
 

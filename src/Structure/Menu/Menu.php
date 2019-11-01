@@ -3,17 +3,17 @@
  * Abstract class for a custom menu.
  *
  * @author  Chrispian Burks <chrispian.burks@webdevstudios.com>
- * @package WebDevStudios\OopsWP\Structure\Content
+ * @package WebDevStudios\OopsWP\Structure\Menu
  */
 
-namespace WebDevStudios\OopsWP\Structure\Content;
+namespace WebDevStudios\OopsWP\Structure\Menu;
 
 use UnexpectedValueException;
 
 /**
  * Class Menu
  *
- * @package WebDevStudios\OopsWP\Structure\Content
+ * @package WebDevStudios\OopsWP\Structure\Menu
  * @since   2019-05-01
  */
 abstract class Menu implements MenuInterface {
@@ -46,48 +46,6 @@ abstract class Menu implements MenuInterface {
 	}
 
 	/**
-	 * Validate the provided menu location.
-	 *
-	 * @author Chrispian Burks <chrispian.burks@webdevstudios.com>
-	 * @throws UnexpectedValueException If the menu location is not valid.
-	 * @since  2019-05-01
-	 */
-	private function validate_location() {
-		if ( empty( $this->location ) ) {
-			throw new UnexpectedValueException(
-				'You must define the $location property for your menu in ' . __CLASS__
-			);
-		}
-
-		if ( ! is_string( $this->location ) ) {
-			throw new UnexpectedValueException(
-				'The $location property defined in your menu class ' . __CLASS__ . ' must be a string'
-			);
-		}
-	}
-
-	/**
-	 * Validate the provided menu description.
-	 *
-	 * @author Chrispian Burks <chrispian.burks@webdevstudios.com>
-	 * @throws UnexpectedValueException If the menu description is not valid.
-	 * @since  2019-05-01
-	 */
-	private function validate_description() {
-		if ( empty( $this->description ) ) {
-			throw new UnexpectedValueException(
-				'You must define the $description property for your menu in ' . __CLASS__
-			);
-		}
-
-		if ( ! is_string( $this->description ) ) {
-			throw new UnexpectedValueException(
-				'The $description property defined in your menu class ' . __CLASS__ . ' must be a string'
-			);
-		}
-	}
-
-	/**
 	 * Verifies the menu has the requirements for proper registration with WordPress.
 	 *
 	 * This method is a guard against attempts to register a menu that is improperly defined. Its only responsibility
@@ -99,8 +57,12 @@ abstract class Menu implements MenuInterface {
 	 * @return void
 	 */
 	private function check_requirements() : void {
-		$this->validate_location();
-		$this->validate_description();
+
+		foreach ( [ 'location', 'description' ] as $property ) {
+			if ( ! is_string( $this->{$property} ) ) {
+        		throw new UnexpectedValueException( '${$property} must be of type string in ' . __CLASS__ );
+			}
+		}
 	}
 
 	/**
@@ -111,12 +73,10 @@ abstract class Menu implements MenuInterface {
 	 * @return void
 	 */
 	private function register_menu() {
-
 		register_nav_menu(
 			$this->location,
 			$this->description
 		);
-
 	}
 
 }
