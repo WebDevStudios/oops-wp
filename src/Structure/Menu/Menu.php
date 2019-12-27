@@ -52,15 +52,14 @@ abstract class Menu implements MenuInterface {
 	 * is to throw an Exception if any are found.
 	 *
 	 * @author Chrispian H. Burks <chrispian.burks@webdevstudios.com>
-	 * @since 2019-11-01
+	 * @since  2019-11-01
 	 * @throws UnexpectedValueException If menu box registration requirements are missing.
 	 * @return void
 	 */
-	private function check_requirements() : void {
-
+	private function check_requirements(): void {
 		foreach ( [ 'location', 'description' ] as $property ) {
 			if ( ! is_string( $this->{$property} ) ) {
-        		throw new UnexpectedValueException( '${$property} must be of type string in ' . __CLASS__ );
+				throw new UnexpectedValueException( '${$property} must be of type string in ' . __CLASS__ );
 			}
 		}
 	}
