@@ -59,7 +59,7 @@ abstract class Menu implements MenuInterface {
 	private function check_requirements(): void {
 		foreach ( [ 'location', 'description' ] as $property ) {
 			if ( ! is_string( $this->{$property} ) ) {
-				throw new UnexpectedValueException( '${$property} must be of type string in ' . __CLASS__ );
+				throw new UnexpectedValueException( "Class property \${$property} must be of type string in " . __CLASS__ );
 			}
 		}
 	}
@@ -77,6 +77,5 @@ abstract class Menu implements MenuInterface {
 			$this->description
 		);
 	}
-
 }
 
