@@ -9,6 +9,7 @@
 
 namespace WebDevStudios\OopsWP\Structure\Editor;
 
+use UnexpectedValueException;
 use WebDevStudios\OopsWP\Utility\FilePathDependent;
 use \Exception;
 
@@ -41,19 +42,123 @@ abstract class EditorBlock implements EditorBlockInterface {
 	protected $has_frontend_styles = false;
 
 	/**
+	 * The location of the block.
+	 *
+	 * Either plugin or theme.
+	 *
+	 * @var string
+	 */
+	private $block_location = 'plugins';
+
+	/**
 	 * Register the block with WordPress.
 	 *
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
-	 * @throws Exception If the block $name property is invalid.
+	 * @throws Exception If missing requirements.
 	 * @since  2019-01-04
 	 */
 	public function register() {
-		$this->validate_name();
+		$this->check_requirements();
 
+		$this->setup_file_path();
 		$this->register_script();
 		$this->register_styles();
+		$this->register_block();
+	}
 
+	/**
+	 * Register the block with WordPress.
+	 *
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since  2019-12-27
+	 * @return void
+	 */
+	private function register_block() {
 		register_block_type( "{$this->name}", array_merge( $this->get_default_args(), $this->get_args() ) );
+	}
+
+	/**
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since  2019-12-27
+	 * @throws Exception If requirements are not met.
+	 * @return void
+	 */
+	private function check_requirements() {
+		$this->validate_name();
+	}
+
+	/**
+	 * Validate the name property of the block.
+	 *
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @throws Exception If the block name is invalid.
+	 * @since  2019-08-02
+	 */
+	private function validate_name() {
+		if ( ! is_string( $this->name ) ) {
+			throw new UnexpectedValueException( '$name property must be of type string in class ' . get_called_class() );
+		}
+
+		$name_parts = explode( '/', $this->name );
+
+		if ( 2 !== count( $name_parts ) ) {
+			throw new Exception( '$name property is not correctly namespaced in class ' . get_called_class() );
+		}
+	}
+
+	/**
+	 * This method sets up a default file path for an EditorBlock if the concrete class doesn't provide one.
+	 *
+	 * This path will be located from the root of a plugin or theme directory, and will be based on the
+	 * name provided by the child class.
+	 *
+	 * e.g., /wp-content/plugins/my-plugin/src/blocks/webdevstudios-block
+	 *
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since  2019-12-27
+	 * @throws \ReflectionException
+	 * @return void
+	 */
+	protected function setup_file_path() {
+		if ( $this->file_path ) {
+			return;
+		}
+
+		$path = $this->get_path_values();
+
+		if ( 2 !== count( array_filter( $path ) ) ) {
+			return;
+		}
+
+		if ( $path['type'] !== $this->block_location ) {
+			$this->block_location = 'themes';
+		}
+
+		$block_dir = strtolower( str_replace( DIRECTORY_SEPARATOR, '-', $this->name ) );
+
+		$this->file_path = trailingslashit( "{$path['name']}/src/blocks/{$block_dir}" );
+	}
+
+	/**
+	 * Get the path values of the calling class as an indexed array.
+	 *
+	 * Returns an indexed array which contains the path type (e.g., plugins or themes) and
+	 * the path name, which is the directory name for the plugin or theme.
+	 *
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since  2019-12-27
+	 * @throws \ReflectionException
+	 * @return array
+	 */
+	private function get_path_values() : array {
+		$class         = new \ReflectionClass( get_called_class() );
+		$relative_path = str_replace( WP_CONTENT_DIR, '', $class->getFileName() );
+		$parts         = explode( DIRECTORY_SEPARATOR, ltrim( $relative_path, DIRECTORY_SEPARATOR ) );
+
+		return [
+			'type' => in_array( $parts[0] ?? '', [ 'plugins', 'themes' ], true ) ? $parts[0] : '',
+			'name' => $parts[1] ?? '',
+		];
 	}
 
 	/**
@@ -70,14 +175,19 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 * @throws \Exception If the class does not exist or the asset is not readable.
 	 */
 	public function get_asset_url( string $asset ) {
-		$full_assets_dir = $this->get_assets_path( $asset );
-		$asset_path      = $full_assets_dir . $asset;
+		$asset_path = $this->get_assets_path( $asset );
 
 		if ( ! is_readable( $asset_path ) ) {
 			throw new \Exception( "Could not find requested asset at {$asset_path}." );
 		}
 
-		return trailingslashit( get_site_url() ) . str_replace( ABSPATH, '', $full_assets_dir ) . $asset;
+		if ( 'plugins' === $this->block_location ) {
+			$path = trailingslashit( WP_CONTENT_DIR ) . $this->block_location . '/';
+
+			return plugin_dir_url( $path . $this->file_path . $asset );
+		}
+
+		return get_stylesheet_directory_uri() . $this->file_path . $asset;
 	}
 
 	/**
@@ -90,49 +200,10 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 * @since  2019-08-02
 	 * @return string
 	 */
-	protected function get_assets_path( string $asset ): string {
-		if ( ! $this->file_path ) {
-			throw new Exception( 'File path not set on ' . get_called_class() );
-		}
-
-		$paths = $this->locate_valid_file_paths( $asset );
-
-		if ( empty( $paths ) ) {
-			throw new \Exception( "Could not find {$asset} at any expected file path." );
-		}
-
-		return $paths[0];
-	}
-
-	/**
-	 * Get the directory paths where block assets are stored for this given block.
-	 *
-	 * Note: this is completely customizable by an extending class.
-	 *
-	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
-	 * @since  2019-08-02
-	 * @return array
-	 */
-	protected function get_valid_block_asset_directory_paths() : array {
-		return [
-			trailingslashit( $this->file_path . 'assets/dist/' . $this->get_short_class_name() ),
-			trailingslashit( $this->file_path . 'blocks/' . $this->get_short_class_name() . '/assets' ),
-		];
-	}
-
-	/**
-	 * Get the short class name of this file.
-	 *
-	 * This class name is used to construct file paths to block assets.
-	 *
-	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
-	 * @since  2019-08-02
-	 * @return string
-	 */
-	private function get_short_class_name() {
-		$block_class = explode( '\\', get_called_class() );
-
-		return array_pop( $block_class );
+	protected function get_assets_path( string $asset ) : string {
+		return trailingslashit( WP_CONTENT_DIR )
+		       . trailingslashit( $this->block_location )
+		       . trailingslashit( $this->file_path ) . $asset;
 	}
 
 	/**
@@ -207,7 +278,7 @@ abstract class EditorBlock implements EditorBlockInterface {
 	protected function register_script() {
 		wp_register_script(
 			"{$this->name}-js",
-			$this->get_asset_url( 'block.js' ),
+			plugin_dir_url( "{$this->file_path}/block.js" ),
 			array_merge( $this->get_default_block_scripts(), $this->get_additional_block_scripts() )
 		);
 	}
@@ -250,44 +321,5 @@ abstract class EditorBlock implements EditorBlockInterface {
 				array_merge( $dependencies, $this->get_additional_block_styles() )
 			);
 		}
-	}
-
-	/**
-	 * Validate the name property of the block.
-	 *
-	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
-	 * @throws Exception If the block name is invalid.
-	 * @since  2019-08-02
-	 */
-	private function validate_name() {
-		if ( ! is_string( $this->name ) ) {
-			throw new Exception( get_called_class() . ' must define a string value for $name.' );
-		}
-
-		$name_parts = explode( '/', $this->name );
-
-		if ( 2 !== count( $name_parts ) ) {
-			throw new Exception( get_called_class() . ' $name property is not properly namespaced.' );
-		}
-	}
-
-	/**
-	 * Locates the file paths that are valid for this block.
-	 *
-	 * @param string $asset The asset to locate.
-	 *
-	 * @return array
-	 * @since  2019-08-02
-	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
-	 */
-	private function locate_valid_file_paths( string $asset ) {
-		return array_values(
-			array_filter(
-				$this->get_valid_block_asset_directory_paths(),
-				function ( $path ) use ( $asset ) {
-					return is_readable( $path . $asset );
-				}
-			)
-		);
 	}
 }
