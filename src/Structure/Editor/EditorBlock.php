@@ -24,7 +24,7 @@ abstract class EditorBlock implements EditorBlockInterface {
 	use FilePathDependent;
 
 	/**
-	 * The full package name of the block.
+	 * The full vendor/package namespaced name of the block.
 	 *
 	 * Examples: webdevstudios/custom-wysiwyg, webdevstudios-dynamic-block
 	 *
@@ -48,7 +48,23 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 *
 	 * @var string
 	 */
-	private $block_location = 'plugins';
+	private $content_dirname = 'plugins';
+
+	/**
+	 * The name of the package in which the block is contained.
+	 *
+	 * e.g., the plugin name or the theme name.
+	 *
+	 * @var string
+	 */
+	private $package_dirname;
+
+	/**
+	 * The default relative path for locating block assets.
+	 *
+	 * @var string
+	 */
+	protected $relative_path = 'src/blocks';
 
 	/**
 	 * Register the block with WordPress.
@@ -120,23 +136,39 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 * @return void
 	 */
 	protected function setup_file_path() {
-		if ( $this->file_path ) {
-			return;
-		}
-
 		$path = $this->get_path_values();
 
 		if ( 2 !== count( array_filter( $path ) ) ) {
 			return;
 		}
 
-		if ( $path['type'] !== $this->block_location ) {
-			$this->block_location = 'themes';
+		if ( $path['type'] !== $this->content_dirname ) {
+			$this->content_dirname = 'themes';
 		}
 
-		$block_dir = strtolower( str_replace( DIRECTORY_SEPARATOR, '-', $this->name ) );
+		$this->package_dirname = $path['name'];
 
-		$this->file_path = trailingslashit( "{$path['name']}/src/blocks/{$block_dir}" );
+		$this->file_path = trailingslashit( implode(
+			DIRECTORY_SEPARATOR,
+			array_filter(
+				[
+					'plugins' === $this->content_dirname ? untrailingslashit( $this->package_dirname ) : '',
+					untrailingslashit( $this->relative_path ),
+					untrailingslashit( $this->get_block_dirname() ),
+				]
+			)
+		) );
+	}
+
+	/**
+	 * Get the name of the block directory, derived from the concrete class's block name.
+	 *
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since  2019-12-27
+	 * @return string
+	 */
+	private function get_block_dirname() {
+		return strtolower( str_replace( DIRECTORY_SEPARATOR, '-', $this->name ) );
 	}
 
 	/**
@@ -151,14 +183,25 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 * @return array
 	 */
 	private function get_path_values() : array {
-		$class         = new \ReflectionClass( get_called_class() );
-		$relative_path = str_replace( WP_CONTENT_DIR, '', $class->getFileName() );
+		$relative_path = str_replace( WP_CONTENT_DIR, '', $this->get_file_path() );
 		$parts         = explode( DIRECTORY_SEPARATOR, ltrim( $relative_path, DIRECTORY_SEPARATOR ) );
 
 		return [
 			'type' => in_array( $parts[0] ?? '', [ 'plugins', 'themes' ], true ) ? $parts[0] : '',
 			'name' => $parts[1] ?? '',
 		];
+	}
+
+	/**
+	 * Get the file path if one is provided, or derive one if not.
+	 *
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since  2019-12-27
+	 * @throws \ReflectionException
+	 * @return false|string
+	 */
+	private function get_file_path() {
+		return $this->file_path ?: ( new \ReflectionClass( get_called_class() ) )->getFileName();
 	}
 
 	/**
@@ -181,13 +224,9 @@ abstract class EditorBlock implements EditorBlockInterface {
 			throw new \Exception( "Could not find requested asset at {$asset_path}." );
 		}
 
-		if ( 'plugins' === $this->block_location ) {
-			$path = trailingslashit( WP_CONTENT_DIR ) . $this->block_location . '/';
-
-			return plugin_dir_url( $path . $this->file_path . $asset );
-		}
-
-		return get_stylesheet_directory_uri() . $this->file_path . $asset;
+		return 'plugins' === $this->content_dirname
+			? plugin_dir_url( $this->file_path . $asset ) . $asset
+			: trailingslashit( get_stylesheet_directory_uri() ) . $this->file_path . $asset;
 	}
 
 	/**
@@ -201,9 +240,11 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 * @return string
 	 */
 	protected function get_assets_path( string $asset ) : string {
-		return trailingslashit( WP_CONTENT_DIR )
-		       . trailingslashit( $this->block_location )
-		       . trailingslashit( $this->file_path ) . $asset;
+		if ( 'plugins' === $this->content_dirname ) {
+			return trailingslashit( \WP_PLUGIN_DIR ) . $this->file_path . $asset;
+		}
+
+		return trailingslashit( get_stylesheet_directory_uri() ) . $this->file_path;
 	}
 
 	/**
@@ -251,6 +292,7 @@ abstract class EditorBlock implements EditorBlockInterface {
 		return [
 			'wp-blocks',
 			'wp-element',
+			'wp-i18n',
 		];
 	}
 
@@ -278,8 +320,8 @@ abstract class EditorBlock implements EditorBlockInterface {
 	protected function register_script() {
 		wp_register_script(
 			"{$this->name}-js",
-			plugin_dir_url( "{$this->file_path}/block.js" ),
-			array_merge( $this->get_default_block_scripts(), $this->get_additional_block_scripts() )
+			$this->get_asset_url( 'block.js' ),
+			array_merge( $this->get_default_block_scripts(), $this->get_additional_block_scripts() ),
 		);
 	}
 
