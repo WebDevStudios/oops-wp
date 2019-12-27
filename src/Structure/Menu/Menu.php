@@ -65,7 +65,7 @@ abstract class Menu implements MenuInterface {
 	}
 
 	/**
-	 * Register our menu with WordPress
+	 * Register our menu with WordPress.
 	 *
 	 * @author Chrispian H. Burks <chrispian.burks@webvdevstudios.com>
 	 * @since  2019-11-01
