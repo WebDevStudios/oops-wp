@@ -50,28 +50,12 @@ abstract class EditorBlock implements EditorBlockInterface {
 	/**
 	 * Flag as to whether the block has front-end styles.
 	 *
+	 * Defaults to true. We will assume that most blocks will ship with a corresponding front-end stylesheet.
+	 *
 	 * @var bool
 	 * @since 2019-08-02
 	 */
-	protected $has_frontend_styles = false;
-
-	/**
-	 * The location of the block.
-	 *
-	 * Either plugin or theme.
-	 *
-	 * @var string
-	 */
-	private $content_dirname = 'plugins';
-
-	/**
-	 * The name of the package in which the block is contained.
-	 *
-	 * e.g., the plugin name or the theme name.
-	 *
-	 * @var string
-	 */
-	private $package_dirname;
+	protected $has_frontend_styles = true;
 
 	/**
 	 * The default relative path for locating block assets.
@@ -79,6 +63,20 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 * @var string
 	 */
 	protected $relative_path = 'src/blocks';
+
+	/**
+	 * The directory within wp-content where the block is located.
+	 *
+	 * @var string
+	 */
+	private $wpcontent_dirname;
+
+	/**
+	 * The directory name of the plugin or theme.
+	 *
+	 * @var string
+	 */
+	private $package_dirname;
 
 	/**
 	 * Register the block with WordPress.
