@@ -2,6 +2,19 @@
 /**
  * Defines a contract for registering new editor blocks.
  *
+ * The purpose of this class is to provide a standardized model for declaring the location of editor block assets.
+ * The extending class should set a value for the $name property of the block, adhering to WordPress's namespacing
+ * convention for blocks (e.g., <vendor>/<block_name>). Additionally, the author of the block should create assets
+ * for the JavaScript entrypoint, the editor CSS and the front-end CSS with the following names:
+ * - index.js
+ * - editor.css
+ * - style.css
+ *
+ * By default, this class will look for these assets relative to the root directory of the plugin or theme, at
+ * /src/blocks/${name}/, where $name is the lowercase, hyphenated variant of the block name (excluding the vendor
+ * prefix). For example, if the $name property on your class is webdevstudios/my_awesome_block, your assets for this
+ * block should be in /src/blocks/my-awesome-block/.
+ *
  * @author  Jeremy Ward <jeremy.ward@webdevstudios.com>
  * @package WebDevStudios\OopsWP\Structure\Editor
  * @since   2019-01-04
