@@ -88,21 +88,10 @@ abstract class EditorBlock implements EditorBlockInterface {
 	public function register() {
 		$this->check_requirements();
 
-		$this->setup_file_path();
+		$this->setup_assets_file_path();
 		$this->register_script();
 		$this->register_styles();
 		$this->register_block();
-	}
-
-	/**
-	 * Register the block with WordPress.
-	 *
-	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
-	 * @since  2019-12-27
-	 * @return void
-	 */
-	private function register_block() {
-		register_block_type( "{$this->name}", array_merge( $this->get_default_args(), $this->get_args() ) );
 	}
 
 	/**
@@ -135,7 +124,18 @@ abstract class EditorBlock implements EditorBlockInterface {
 	}
 
 	/**
-	 * This method sets up a default file path for an EditorBlock if the concrete class doesn't provide one.
+	 * Register the block with WordPress.
+	 *
+	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
+	 * @since  2019-12-27
+	 * @return void
+	 */
+	private function register_block() {
+		register_block_type( "{$this->name}", array_merge( $this->get_default_args(), $this->get_args() ) );
+	}
+
+	/**
+	 * This method sets up an assets file path for an EditorBlock if one is not provided by the implementation.
 	 *
 	 * This path will be located from the root of a plugin or theme directory, and will be based on the
 	 * name provided by the child class.
@@ -144,43 +144,62 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 *
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2019-12-27
-	 * @throws \ReflectionException
+	 * @throws ReflectionException
 	 * @return void
 	 */
-	protected function setup_file_path() {
-		$path = $this->get_path_values();
+	protected function setup_assets_file_path() {
+		$this->derive_path_values();
 
-		if ( 2 !== count( array_filter( $path ) ) ) {
+		if ( ! ( $this->wpcontent_dirname && $this->package_dirname ) ) {
 			return;
 		}
 
-		if ( $path['type'] !== $this->content_dirname ) {
-			$this->content_dirname = 'themes';
+		$this->file_path = trailingslashit(
+			implode(
+				DIRECTORY_SEPARATOR,
+				array_filter(
+					[
+						'themes' === $this->wpcontent_dirname ? '' : untrailingslashit( $this->package_dirname ),
+						untrailingslashit( $this->relative_path ),
+						untrailingslashit( $this->get_block_dirname() ),
+					]
+				)
+			)
+		);
+	}
+
+	/**
+	 * Setter for the $wpcontent_dirname property.
+	 *
+	 * @param string $dirname
+	 *
+	 * @throws Exception If unexpected directory value.
+	 */
+	private function set_wpcontent_dirname( string $dirname ) {
+		$wpcontent_dirs = [ 'plugins', 'themes', 'mu-plugins' ];
+
+		if ( ! in_array( $dirname, $wpcontent_dirs, true ) ) {
+			throw new Exception(
+				'Expected package in one of ' . implode( ', ', $wpcontent_dirs ) . ", found {$dirname}."
+			);
 		}
 
-		$this->package_dirname = $path['name'];
-
-		$this->file_path = trailingslashit( implode(
-			DIRECTORY_SEPARATOR,
-			array_filter(
-				[
-					'plugins' === $this->content_dirname ? untrailingslashit( $this->package_dirname ) : '',
-					untrailingslashit( $this->relative_path ),
-					untrailingslashit( $this->get_block_dirname() ),
-				]
-			)
-		) );
+		$this->wpcontent_dirname = $dirname;
 	}
 
 	/**
 	 * Get the name of the block directory, derived from the concrete class's block name.
+	 *
+	 * Returns a lowercase, hyphenated string of the name of the block, excluding the vendor.
 	 *
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2019-12-27
 	 * @return string
 	 */
 	private function get_block_dirname() {
-		return strtolower( str_replace( DIRECTORY_SEPARATOR, '-', $this->name ) );
+		$name_parts = explode( DIRECTORY_SEPARATOR, $this->name );
+
+		return strtolower( str_replace( DIRECTORY_SEPARATOR, '-', $name_parts[1] ) );
 	}
 
 	/**
@@ -191,17 +210,15 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 *
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2019-12-27
-	 * @throws \ReflectionException
-	 * @return array
+	 * @throws ReflectionException Within ReflectionClass.
+	 * @throws Exception If unexpected directory name in wp-content.
 	 */
-	private function get_path_values() : array {
+	private function derive_path_values() {
 		$relative_path = str_replace( WP_CONTENT_DIR, '', $this->get_file_path() );
 		$parts         = explode( DIRECTORY_SEPARATOR, ltrim( $relative_path, DIRECTORY_SEPARATOR ) );
 
-		return [
-			'type' => in_array( $parts[0] ?? '', [ 'plugins', 'themes' ], true ) ? $parts[0] : '',
-			'name' => $parts[1] ?? '',
-		];
+		$this->set_wpcontent_dirname( $parts[0] ?? '' );
+		$this->package_dirname = $parts[1] ?? '';
 	}
 
 	/**
@@ -209,10 +226,10 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 *
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2019-12-27
-	 * @throws \ReflectionException
+	 * @throws ReflectionException Within ReflectionClass.
 	 * @return false|string
 	 */
-	private function get_file_path() {
+	public function get_file_path() {
 		return $this->file_path ?: ( new \ReflectionClass( get_called_class() ) )->getFileName();
 	}
 
@@ -227,16 +244,16 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2019-02-17
 	 * @return string
-	 * @throws \Exception If the class does not exist or the asset is not readable.
+	 * @throws Exception If the class does not exist or the asset is not readable.
 	 */
 	public function get_asset_url( string $asset ) {
 		$asset_path = $this->get_assets_path( $asset );
 
 		if ( ! is_readable( $asset_path ) ) {
-			throw new \Exception( "Could not find requested asset at {$asset_path}." );
+			throw new Exception( "Could not find requested asset at {$asset_path}." );
 		}
 
-		return 'plugins' === $this->content_dirname
+		return 'plugins' === $this->wpcontent_dirname
 			? plugin_dir_url( $this->file_path . $asset ) . $asset
 			: trailingslashit( get_stylesheet_directory_uri() ) . $this->file_path . $asset;
 	}
@@ -252,8 +269,12 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 * @return string
 	 */
 	protected function get_assets_path( string $asset ) : string {
-		if ( 'plugins' === $this->content_dirname ) {
+		if ( 'plugins' === $this->wpcontent_dirname ) {
 			return trailingslashit( \WP_PLUGIN_DIR ) . $this->file_path . $asset;
+		}
+
+		if ( 'mu-plugins' === $this->wpcontent_dirname ) {
+			return trailingslashit( WPMU_PLUGIN_DIR ) . $this->file_path . $asset;
 		}
 
 		return trailingslashit( get_stylesheet_directory_uri() ) . $this->file_path;
@@ -270,11 +291,14 @@ abstract class EditorBlock implements EditorBlockInterface {
 		$args = [
 			'editor_script' => "{$this->name}-js",
 			'editor_style'  => "{$this->name}-editor",
+			'style'         => "{$this->name}-style",
 		];
 
-		return $this->has_frontend_styles
-			? array_merge( $args, [ 'style' => "{$this->name}-style" ] )
-			: $args;
+		if ( ! $this->has_frontend_styles ) {
+			unset( $args['style'] );
+		}
+
+		return $args;
 	}
 
 	/**
@@ -312,7 +336,7 @@ abstract class EditorBlock implements EditorBlockInterface {
 	 * Get additional script dependencies for the registered block.
 	 *
 	 * Anything that's not included in the defaults above can be added by the extending classes. This
-	 * might include scripts like wp-components, wp-i18n, and wp-editor, among others.
+	 * might include scripts like wp-components, wp-data, and wp-editor, among others.
 	 *
 	 * @return array
 	 * @since  2019-08-02
@@ -332,8 +356,8 @@ abstract class EditorBlock implements EditorBlockInterface {
 	protected function register_script() {
 		wp_register_script(
 			"{$this->name}-js",
-			$this->get_asset_url( 'block.js' ),
-			array_merge( $this->get_default_block_scripts(), $this->get_additional_block_scripts() ),
+			$this->get_asset_url( 'index.js' ),
+			array_merge( $this->get_default_block_scripts(), $this->get_additional_block_scripts() )
 		);
 	}
 
@@ -351,9 +375,7 @@ abstract class EditorBlock implements EditorBlockInterface {
 
 	/**
 	 * Register the editor and front-end styles for rendering the block.
-	 *
-	 * Concrete EditorBlock instances must declare that they have front-end styles in order to render them in the editor.
-	 *
+	 **
 	 * @throws Exception If the style asset(s) cannot be found.
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2019-01-05
