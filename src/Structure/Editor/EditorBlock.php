@@ -25,6 +25,7 @@ namespace WebDevStudios\OopsWP\Structure\Editor;
 use UnexpectedValueException;
 use WebDevStudios\OopsWP\Utility\FilePathDependent;
 use \Exception;
+use \ReflectionException;
 
 /**
  * Class EditorBlock
