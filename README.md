@@ -16,8 +16,12 @@ available for you to use. In order to make those structures available
 to WordPress, you'll need to require the Composer-generated autoload file:
 
 ```
-require_once __DIR__ . '/vendor/autoload.php';
+if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
+	require_once __DIR__ . '/vendor/autoload.php';
+}
 ```
+
+**Note:** Details on why we include the `is_readable()` check is available [in the wiki](https://github.com/WebDevStudios/oops-wp/wiki/Why-wrap-require-autoloader-in-a-is_readable%28%29-check%3F).
 
 ### A Caveat
 WordPress isn't designed to be compatible with Composer, and many plugins
