@@ -26,15 +26,14 @@ interface ShortcodeInterface extends Registerable, Renderable {
 	 * Implementing classes should consider extending this method to perform any necessary validation of
 	 * attributes and content from the database, before finally calling `render` from within this method.
 	 *
-	 * @param array  $atts    The shortcode attributes.
-	 * @param string $content The shortcode content.
+	 * @param array|string $atts    The shortcode attributes. WordPress casts to a string if missing.
+	 * @param string       $content The shortcode content.
 	 *
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2020-01-31
 	 * @see    Shortcode::process_output() for example default implementation.
-	 *
 	 */
-	public function process_output( $atts = [], string $content = '' );
+	public function process_output( $atts, string $content = '' );
 
 	/**
 	 * The content that will be rendered by the shortcode.

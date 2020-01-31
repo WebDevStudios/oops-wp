@@ -61,15 +61,15 @@ abstract class Shortcode implements ShortcodeInterface {
 	 * are required to implement as part of the shortcode contract. The main purpose of this process is to apply
 	 * attributes and content to the Shortcode class and make them available at the time `render` is called.
 	 *
-	 * @param array  $atts    The shortcode attributes.
-	 * @param string $content The shortcode content.
+	 * @param array|string $atts    The shortcode attributes. WordPress casts to string if missing.
+	 * @param string       $content The shortcode content.
 	 *
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2020-01-31
 	 * @return string
 	 */
-	public function process_output( $atts = [], string $content = '' ) : string {
-		$this->atts    = $atts;
+	public function process_output( $atts, string $content = '' ) : string {
+		$this->atts    = $atts ?: [];
 		$this->content = $content;
 
 		return $this->render();
