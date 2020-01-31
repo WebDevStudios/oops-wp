@@ -1,5 +1,6 @@
 # Changelog
-## X.X.X
+## 0.3.0
+- Introduce Menu structure for registering custom menus.
 - Fix issue with Shortcode structure that prevented processing of attributes and content.
 
 ## 0.2.0
