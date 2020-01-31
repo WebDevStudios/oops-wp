@@ -33,7 +33,7 @@ interface ShortcodeInterface extends Registerable, Renderable {
 	 * @since  2020-01-31
 	 * @see    Shortcode::process_output() for example default implementation.
 	 */
-	public function process_output( $atts, string $content = '' );
+	public function process_output( $atts, string $content = '' ) : string;
 
 	/**
 	 * The content that will be rendered by the shortcode.
