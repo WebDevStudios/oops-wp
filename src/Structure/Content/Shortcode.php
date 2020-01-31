@@ -31,7 +31,7 @@ abstract class Shortcode implements ShortcodeInterface {
 	 * @var array
 	 * @since 2020-01-31
 	 */
-	protected $attributes;
+	protected $atts;
 
 	/**
 	 * The shortcode content when it is processed.
@@ -61,17 +61,18 @@ abstract class Shortcode implements ShortcodeInterface {
 	 * are required to implement as part of the shortcode contract. The main purpose of this process is to apply
 	 * attributes and content to the Shortcode class and make them available at the time `render` is called.
 	 *
-	 * @param array  $attributes The shortcode attributes.
-	 * @param string $content    The shortcode content.
+	 * @param array  $atts    The shortcode attributes.
+	 * @param string $content The shortcode content.
 	 *
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2020-01-31
+	 * @return string
 	 */
-	public function process_output( array $attributes = [], string $content = '' ) {
-		$this->attributes = $attributes;
-		$this->content    = $content;
+	public function process_output( $atts = [], string $content = '' ) : string {
+		$this->atts    = $atts;
+		$this->content = $content;
 
-		$this->render();
+		return $this->render();
 	}
 
 	/**
