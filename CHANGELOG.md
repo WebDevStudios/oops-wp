@@ -1,4 +1,6 @@
 # Changelog
+## X.X.X
+- Fix issue with Shortcode structure that prevented processing of attributes and content.
 
 ## 0.2.0
 - Introduces new abstract classes and interfaces to the library.
