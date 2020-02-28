@@ -57,8 +57,7 @@ abstract class ApiEndpoint extends ContentType implements Runnable {
 
 		$this->check_requirements();
 
-		$args             = array_merge( $this->get_default_args(), $this->get_args() );
-		$args['callback'] = [ $this, 'run' ];
+		$args = array_merge( $this->get_default_args(), $this->get_args() );
 
 		register_rest_route( $this->namespace, $this->route, $args, $this->override );
 	}
@@ -102,7 +101,8 @@ abstract class ApiEndpoint extends ContentType implements Runnable {
 	 */
 	protected function get_default_args() : array {
 		return [
-			'methods'  => [ 'GET' ],
+			'methods'  => \WP_REST_Server::READABLE,
+			'callback' => [ $this, 'run' ],
 		];
 	}
 }
