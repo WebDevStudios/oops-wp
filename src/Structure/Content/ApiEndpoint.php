@@ -105,4 +105,9 @@ abstract class ApiEndpoint extends ContentType implements Runnable {
 			'callback' => [ $this, 'run' ],
 		];
 	}
+
+	/** This function is not needed; maybe this is not a content type? */
+	protected function get_labels() : array {
+		return [];
+	}
 }
