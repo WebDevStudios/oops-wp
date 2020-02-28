@@ -8,6 +8,8 @@
 
 namespace WebDevStudios\OopsWP\Structure\Content;
 
+use WebDevStudios\OopsWP\Exception\RequirementNotMetException;
+
 /**
  * Class PostType
  *
@@ -26,11 +28,26 @@ abstract class PostType extends ContentType {
 	/**
 	 * Callback to register the post type with WordPress.
 	 *
-	 * @TODO  Add exception if slug is null. Extending classes should be defining their own.
+	 * @throws RequirementNotMetException If post type registration requirements are missing.
 	 * @since 0.1.0
 	 */
 	public function register() {
+		$this->check_requirements();
+
 		register_post_type( $this->slug, array_merge( $this->get_default_args(), $this->get_args() ) );
+	}
+
+	/**
+	 * Check whether the post type meets the requirements for registration. Throws exception if not.
+	 *
+	 * @author Evan Hildreth <evan.hildreth@webdevstudios.com>
+	 * @throws RequirementNotMetException If post type registration requirements are missing.
+	 * @since  2020-02-28
+	 */
+	private function check_requirements() {
+		if ( ! $this->slug ) {
+			throw new RequirementNotMetException( __( 'You must give your post type a slug in order to register it.', 'oops-wp' ) );
+		}
 	}
 
 	/**

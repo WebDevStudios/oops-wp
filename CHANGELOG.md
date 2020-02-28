@@ -1,4 +1,8 @@
 # Changelog
+## Unreleased
+- Introduces `RequirementNotMetException` for throwing when a class' requirements are not met
+- Updates `PostType` class to throw exception when `$slug` is missing
+
 ## 0.3.0
 - Introduce Menu structure for registering custom menus.
 - Fix issue with Shortcode structure that prevented processing of attributes and content.
