@@ -36,6 +36,14 @@ abstract class ApiEndpoint extends ContentType implements Runnable {
 	protected $route;
 
 	/**
+	 * Whether to override any existing matching routes. Defaults to false.
+	 *
+	 * @var bool
+	 * @since 2020-02-28
+	 */
+	protected $override = false;
+
+	/**
 	 * Callback to register the route type with WordPress.
 	 *
 	 * @throws RequirementNotMetException If post type registration requirements are missing.
@@ -52,7 +60,7 @@ abstract class ApiEndpoint extends ContentType implements Runnable {
 		$args             = array_merge( $this->get_default_args(), $this->get_args() );
 		$args['callback'] = [ $this, 'run' ];
 
-		register_rest_route( $this->namespace, $this->route, $args );
+		register_rest_route( $this->namespace, $this->route, $args, $this->override );
 	}
 
 	/**
