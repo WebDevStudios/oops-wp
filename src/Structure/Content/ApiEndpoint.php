@@ -71,8 +71,12 @@ abstract class ApiEndpoint extends ContentType implements Runnable {
 	 * @since  2020-02-28
 	 */
 	private function check_requirements() {
-		if ( ! $this->slug ) {
-			throw new RequirementNotMetException( __( 'You must give your post type a slug in order to register it.', 'oops-wp' ) );
+		if ( ! $this->namespace ) {
+			throw new RequirementNotMetException( __( 'You must give your endpoint a namespace in order to register it.', 'oops-wp' ) );
+		}
+
+		if ( ! $this->route ) {
+			throw new RequirementNotMetException( __( 'You must give your endpoint a route in order to register it.', 'oops-wp' ) );
 		}
 	}
 
