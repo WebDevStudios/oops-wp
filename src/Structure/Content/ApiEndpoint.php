@@ -10,6 +10,7 @@
 namespace WebDevStudios\OopsWP\Structure\Content;
 
 use WebDevStudios\OopsWP\Utility\Runnable;
+use WebDevStudios\OopsWP\Exception\RequirementNotMetException;
 
 /**
  * Class ApiEndpoint
@@ -37,12 +38,34 @@ abstract class ApiEndpoint extends ContentType implements Runnable {
 	/**
 	 * Callback to register the route type with WordPress.
 	 *
-	 * @TODO  Add exception if namespace or route are null. Extending classes should be defining their own.
+	 * @throws RequirementNotMetException If post type registration requirements are missing.
 	 * @author Evan Hildreth <evan.hildreth@webdevstudios.com>
 	 * @since  0.3.0
 	 */
 	public function register() {
-		register_rest_route( $this->namespace, $this->route, array_merge( $this->get_default_args(), $this->get_args() ) );
+		if ( $this->slug && ! $this->route ) {
+			$this->route = $this->slug;
+		}
+
+		$this->check_requirements();
+
+		$args             = array_merge( $this->get_default_args(), $this->get_args() );
+		$args['callback'] = [ $this, 'run' ];
+
+		register_rest_route( $this->namespace, $this->route, $args );
+	}
+
+	/**
+	 * Check whether the endpoint meets the requirements for registration. Throws exception if not.
+	 *
+	 * @author Evan Hildreth <evan.hildreth@webdevstudios.com>
+	 * @throws RequirementNotMetException If post type registration requirements are missing.
+	 * @since  2020-02-28
+	 */
+	private function check_requirements() {
+		if ( ! $this->slug ) {
+			throw new RequirementNotMetException( __( 'You must give your post type a slug in order to register it.', 'oops-wp' ) );
+		}
 	}
 
 	/**
@@ -68,7 +91,6 @@ abstract class ApiEndpoint extends ContentType implements Runnable {
 	protected function get_default_args() : array {
 		return [
 			'methods'  => [ 'GET' ],
-			'callback' => [ $this, 'run' ],
 		];
 	}
 }
