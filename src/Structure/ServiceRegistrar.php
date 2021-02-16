@@ -86,7 +86,7 @@ abstract class ServiceRegistrar implements Runnable {
 	 */
 	private function set_file_path_on_services() {
 		foreach ( array_filter( $this->services, [ $this, 'service_uses_file_path' ] ) as $service ) {
-			/* @var $service FilePathDependent FilePathDependent service. */
+			/* @var FilePathDependent $service FilePathDependent service. */
 			$service->set_file_path( $this->file_path );
 		}
 	}
