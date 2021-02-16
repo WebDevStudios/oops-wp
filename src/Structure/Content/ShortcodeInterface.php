@@ -32,6 +32,8 @@ interface ShortcodeInterface extends Registerable, Renderable {
 	 * @author Jeremy Ward <jeremy.ward@webdevstudios.com>
 	 * @since  2020-01-31
 	 * @see    Shortcode::process_output() for example default implementation.
+	 *
+	 * @return string
 	 */
 	public function process_output( $atts, string $content = '' ) : string;
 
