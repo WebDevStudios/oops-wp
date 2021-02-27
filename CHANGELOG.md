@@ -1,5 +1,5 @@
 # Changelog
-## 0.3.1
+## 1.0.0
 - Update requirements to support PHP 8.
 
 ## 0.3.0
