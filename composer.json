@@ -4,13 +4,13 @@
     "authors": [
         {
             "name": "Jeremy Ward",
-            "email": "jeremy.ward@webdevstudios.com",
-            "role": "Senior Backend Engineer"
+            "email": "jeremy@jmichaelward.com",
+            "role": "Software Engineer"
         }
     ],
     "license": "GPL-2.0-or-later",
     "require": {
-        "php": "^7"
+        "php": "^7 || ^8"
     },
     "autoload": {
         "psr-4": {

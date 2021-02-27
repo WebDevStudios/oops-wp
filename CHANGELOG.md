@@ -1,4 +1,7 @@
 # Changelog
+## 1.0.0
+- Update requirements to support PHP 8.
+
 ## 0.3.0
 - Introduce Menu structure for registering custom menus.
 - Fix issue with Shortcode structure that prevented processing of attributes and content.
